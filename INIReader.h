@@ -334,6 +334,8 @@ public:
     std::string Get(std::string section, std::string name,
                     std::string default_value) const;
 
+    bool HasValue(std::string section, std::string name) const;
+
     // Get an integer (long) value from INI file, returning default_value if
     // not found or not a valid integer (decimal "1234", "-1234", or hex "0x4d2").
     long GetInteger(std::string section, std::string name, long default_value) const;
@@ -392,13 +394,19 @@ inline const std::set<std::string>& INIReader::Sections() const
     return _sections;
 }
 
-inline std::string INIReader::Get(std::string section, std::string name, std::string default_value) const
+inline std::string INIReader::Get(std::string section, std::string name, std::string default_value = "") const
 {
     std::string key = MakeKey(section, name);
     return _values.count(key) ? _values.at(key) : default_value;
 }
 
-inline long INIReader::GetInteger(std::string section, std::string name, long default_value) const
+inline bool INIReader::HasValue(std::string section, std::string name) const
+{
+    std::string key = MakeKey(section, name);
+    return _values.count(key) > 0;
+}
+
+inline long INIReader::GetInteger(std::string section, std::string name, long default_value = 0) const
 {
     std::string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
@@ -408,7 +416,7 @@ inline long INIReader::GetInteger(std::string section, std::string name, long de
     return end > value ? n : default_value;
 }
 
-inline double INIReader::GetReal(std::string section, std::string name, double default_value) const
+inline double INIReader::GetReal(std::string section, std::string name, double default_value = .0) const
 {
     std::string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
@@ -417,7 +425,7 @@ inline double INIReader::GetReal(std::string section, std::string name, double d
     return end > value ? n : default_value;
 }
 
-inline float INIReader::GetFloat(std::string section, std::string name, float default_value) const
+inline float INIReader::GetFloat(std::string section, std::string name, float default_value = .0f) const
 {
     std::string valstr = Get(section, name, "");
     const char* value = valstr.c_str();
@@ -426,7 +434,7 @@ inline float INIReader::GetFloat(std::string section, std::string name, float de
     return end > value ? n : default_value;
 }
 
-inline bool INIReader::GetBoolean(std::string section, std::string name, bool default_value) const
+inline bool INIReader::GetBoolean(std::string section, std::string name, bool default_value = false) const
 {
     std::string valstr = Get(section, name, "");
     // Convert to lower case to make string comparisons case-insensitive
