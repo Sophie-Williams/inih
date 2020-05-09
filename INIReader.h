@@ -330,6 +330,12 @@ public:
     // Return the list of sections found in ini file
     const std::set<std::string>& Sections() const;
 
+    // Return the list of values found in ini file (copy)
+    const std::set<std::string> Values(std::string section) const;
+
+    // Return the list of values by sections found in ini file
+    const std::set<std::string> Values() const;
+
     // Get a string value from INI file, returning default_value if not found.
     std::string Get(std::string section, std::string name,
                     std::string default_value) const;
@@ -392,6 +398,26 @@ inline int INIReader::ParseError() const
 inline const std::set<std::string>& INIReader::Sections() const
 {
     return _sections;
+}
+
+inline const std::set<std::string> INIReader::Values(std::string section) const
+{
+    std::set<std::string> ret;
+    std::string sectionkey = section + "=";
+    for (auto& value : Values())
+    {
+        if (value.starts_with(sectionkey))
+            ret.insert(value.substr(sectionkey.size()));
+    }
+    return ret;
+}
+
+inline const std::set<std::string> INIReader::Values() const
+{
+    std::set<std::string> ret;
+    for (auto& value : _values)
+        ret.insert(value.first);
+    return ret;
 }
 
 inline std::string INIReader::Get(std::string section, std::string name, std::string default_value = "") const
