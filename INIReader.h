@@ -403,6 +403,7 @@ inline const std::set<std::string>& INIReader::Sections() const
 inline const std::set<std::string> INIReader::Values(std::string section) const
 {
     std::set<std::string> ret;
+    std::transform(section.begin(), section.end(), section.begin(), ::tolower);
     std::string sectionkey = section + "=";
     for (auto& value : Values())
     {
